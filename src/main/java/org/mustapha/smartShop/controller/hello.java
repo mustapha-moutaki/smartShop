@@ -8,6 +8,7 @@ public class hello {
 
     @GetMapping("/hello")
     public String sayHello(){
-        return "hi it's work";
+        return "i am working";
+
     }
 }
