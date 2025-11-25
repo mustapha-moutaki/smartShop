@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # ----------------------------
+  # PostgreSQL Database
+  # ----------------------------
+  postgres:
+    image: postgres:16-alpine  # Lightweight and fast Alpine version
+    container_name: smartshop-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: smartshop_db       # Database name
+      POSTGRES_USER: smartshop_user   # Database username
+      POSTGRES_PASSWORD: smartshop_pass # Database password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8" # UTF8 encoding
+    ports:
+      - "5432:5432"  # Expose port to host
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist database data
+    networks:
+      - smartshop-network  # Connect to custom network
+    healthcheck:  # Check if DB is ready
+      test: ["CMD-SHELL", "pg_isready -U smartshop_user -d smartshop_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ----------------------------
+  # Spring Boot Application
+  # ----------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use Dockerfile to build the app image
+    container_name: smartshop-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"  # Expose port for the app
+    environment:
+      SPRING_PROFILES_ACTIVE: docker  # Activate Docker profile
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/smartshop_db
+      SPRING_DATASOURCE_USERNAME: smartshop_user
+      SPRING_DATASOURCE_PASSWORD: smartshop_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_LIQUIBASE_ENABLED: true
+    depends_on:
+      postgres:
+        condition: service_healthy  # Wait until DB is healthy
+    networks:
+      - smartshop-network
+    healthcheck:  # Check if the app is running
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 150s
+
+  # ----------------------------
+  # PgAdmin (GUI for PostgreSQL)
+  # ----------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: smartshop-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@smartshop.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"  # Access PgAdmin in browser
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin  # Persist PgAdmin data
+    depends_on:
+      - postgres
+    networks:
+      - smartshop-network
+
+# ----------------------------
+# Volumes for persistent storage
+# ----------------------------
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  jenkins_home:
+    driver: local
+
+# ----------------------------
+# Custom network for service communication
+# ----------------------------
+networks:
+  smartshop-network:
+    driver: bridge
