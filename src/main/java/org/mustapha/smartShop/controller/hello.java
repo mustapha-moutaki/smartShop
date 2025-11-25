@@ -9,6 +9,5 @@ public class hello {
     @GetMapping("/hello")
     public String sayHello(){
         return "i am working";
-
     }
 }
