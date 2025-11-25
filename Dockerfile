@@ -1,14 +1,14 @@
-# use java image already exist
-FROM openjdk:17-jdk-slim
-
-# add working folder inside contaienr
+# Stage 1: Build
+FROM maven:3.9-eclipse-temurin-17-alpine AS build
 WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# copy generaeted file jar to the container
-COPY target/supplychainix-0.0.1-SNAPSHOT.jar app.jar
-
-# open the port that app will use to run
+# Stage 2: Run
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# commands run app
 ENTRYPOINT ["java", "-jar", "app.jar"]
