@@ -1,6 +1,6 @@
 package org.mustapha.smartShop.enums;
 
-enum LoyaltyLevel {
+public enum LoyaltyLevel {
     BRONZE,
     SILVER,
     GOLD,
