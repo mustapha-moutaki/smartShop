@@ -30,6 +30,6 @@ public class User {
     @Column(nullable = false,length = 20)
     private UserRole role;
 
-    @OneToOne(mappedBy= "user")
-   private Client client;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Client client;
 }
