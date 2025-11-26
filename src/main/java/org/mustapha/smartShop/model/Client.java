@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.query.Order;
+import org.mustapha.smartShop.model.Order;
 import org.mustapha.smartShop.enums.LoyaltyLevel;
 
 import java.util.ArrayList;
