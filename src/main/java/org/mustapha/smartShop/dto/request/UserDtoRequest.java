@@ -21,5 +21,5 @@ public class UserDtoRequest {
     @NotNull(message = "role is required")
     private UserRole role;
 
-    private ClientDtoRequest client;
+    private ClientDtoRequest client; // null able
 }
