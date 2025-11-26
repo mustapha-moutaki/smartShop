@@ -10,6 +10,7 @@ import org.mustapha.smartShop.mapper.ClientMapper;
 import org.mustapha.smartShop.mapper.UserMapper;
 import org.mustapha.smartShop.model.Client;
 import org.mustapha.smartShop.model.User;
+import org.mustapha.smartShop.repository.ClientRepository;
 import org.mustapha.smartShop.repository.UserRepository;
 import org.mustapha.smartShop.service.UserService;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
+
     private final UserMapper userMapper;
     private final ClientMapper clientMapper;
 
@@ -32,7 +35,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new ValidationException("Username already exists: " + dto.getUsername());
         }
-
+        if (dto.getClient() != null && clientRepository.findByEmail(dto.getClient().getEmail()).isPresent()) {
+            throw new ValidationException("Email already exist");
+        }
         // Convert DTO to Entity
         User user = userMapper.toEntity(dto);
 
