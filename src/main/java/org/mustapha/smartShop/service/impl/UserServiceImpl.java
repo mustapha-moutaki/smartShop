@@ -91,22 +91,19 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
+
     @Override
     public List<UserDtoResponse> getAllUsers() {
-        // Fetch all users from database and convert to DTOs
         return userRepository.findAll()
                 .stream()
-                .map(userMapper::toDto)
+                .map(user -> userMapper.toDto(user))
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(Long id) {
-        // Find user by id or throw exception
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-
-        // Delete user from database
+      // find user in db
+        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("user not found with id: "+id));
         userRepository.delete(user);
     }
 }
