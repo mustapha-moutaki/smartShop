@@ -1,0 +1,59 @@
+package org.mustapha.smartShop.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.mustapha.smartShop.dto.request.UserDtoRequest;
+import org.mustapha.smartShop.dto.response.UserDtoResponse;
+import org.mustapha.smartShop.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/v1/users")
+
+// add pagiantaion
+public class UserController {
+    private final UserService userService;
+
+    @PostMapping
+    public ResponseEntity<UserDtoResponse>createUser(@Valid @RequestBody UserDtoRequest userDtoRequest){
+        UserDtoResponse createdUser =  userService.createUser(userDtoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDtoResponse>updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserDtoRequest userDtoRequest
+    )
+    {
+        UserDtoResponse updatedUser = userService.updateUser(id, userDtoRequest);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDtoResponse>getById( @PathVariable Long id){
+        UserDtoResponse userFind = userService.getUerById(id);
+        return ResponseEntity.ok(userFind);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDtoResponse>> getAllUsers() {
+        List<UserDtoResponse> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserDtoResponse>deleteUUser(@PathVariable Long id){
+
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+
+    }
+
+}
