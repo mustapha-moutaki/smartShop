@@ -12,7 +12,9 @@ import org.mustapha.smartShop.repository.ProductRepository;
 import org.mustapha.smartShop.service.ProductService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 
 @Service
@@ -73,20 +75,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDtoResponse> getAllProducts() {
-        List<Product>productsList = productRepository.findAll();
-
-
-        List<ProductDtoResponse>  products = productsList.stream()
-                .filter(product -> !product.isDeleted()) // becaues we have primitive boolean not Boolean (object)
-                .map(product -> productMapper.toDto(product))
-                .toList();
-
-         if(products.isEmpty()){
-             throw new ResourceNotFoundException("No product found");
-         }
-         return products;
-
+    public Page<ProductDtoResponse> getAllProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productsList = productRepository.findByDeletedFalse(pageable);
+        return productsList.map(productMapper::toDto);
     }
 
     @Override
