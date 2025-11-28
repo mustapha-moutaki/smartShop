@@ -2,9 +2,8 @@ package org.mustapha.smartShop.service;
 
 import org.mustapha.smartShop.dto.request.ProductDtoRequest;
 import org.mustapha.smartShop.dto.response.ProductDtoResponse;
-import org.mustapha.smartShop.model.Product;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 public interface ProductService {
     ProductDtoResponse createProduct(ProductDtoRequest productDtoRequest);
@@ -13,7 +12,7 @@ public interface ProductService {
 
     ProductDtoResponse getProductById(Long id);
 
-    List<ProductDtoResponse> getAllProducts();
+    Page<ProductDtoResponse> getAllProducts(int page, int size);
 
     void softDelete(Long id);
 
