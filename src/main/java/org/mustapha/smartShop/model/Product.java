@@ -21,4 +21,6 @@ public class Product {
     private double unitPrice;
 
     private int stock;
+
+    private boolean deleted = false; // for soft delete
 }
