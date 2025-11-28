@@ -13,6 +13,9 @@ import org.mustapha.smartShop.model.User;
 import org.mustapha.smartShop.repository.ClientRepository;
 import org.mustapha.smartShop.repository.UserRepository;
 import org.mustapha.smartShop.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -98,11 +101,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserDtoResponse> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(user -> userMapper.toDto(user))
-                .collect(Collectors.toList());
+    public Page<UserDtoResponse> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAll(pageable)
+                .map(user -> userMapper.toDto(user));
     }
 
     @Override

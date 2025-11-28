@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.mustapha.smartShop.dto.request.UserDtoRequest;
 import org.mustapha.smartShop.dto.response.UserDtoResponse;
 import org.mustapha.smartShop.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +44,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDtoResponse>> getAllUsers() {
-        List<UserDtoResponse> users = userService.getAllUsers();
+    public ResponseEntity<Page<UserDtoResponse>>getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<UserDtoResponse> users = userService.getAllUsers(page, size);
         return ResponseEntity.ok(users);
     }
 
