@@ -1,7 +1,9 @@
 package org.mustapha.smartShop.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.mustapha.smartShop.enums.OrderStatus;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,16 +24,11 @@ public class Order {
     @JoinColumn(name = "client_id")
     private Client client;
 
-    // many prodcuts has many orders and many order for same order
-    @ManyToMany
-    @JoinTable(
-            name = "order_item",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product>products = new ArrayList<>();
+    // single order contains many orderItem
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
 
-    private LocalDateTime date;
+    private LocalDateTime date = LocalDateTime.now();
 
     private double subTotal;
 
@@ -45,7 +44,7 @@ public class Order {
 
     private OrderStatus status = OrderStatus.PENDING;
 
-    private double RemainingAmount;
+    private double remainingAmount;
 
 
 }

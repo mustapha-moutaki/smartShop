@@ -20,9 +20,10 @@ public class ClientDtoResponse {
     private List<Long> orderIds;
 
 
-    // data related with user
-    private String username;
-    private UserRole role;
+    // avoid to retunr them in repsonse
+//    // data related with user
+//    private String username;
+//    private UserRole role;
 
 
 }

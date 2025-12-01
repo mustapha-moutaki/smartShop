@@ -21,10 +21,7 @@ public class PromoCode {
 
     private double percentage;
 
-    private boolean isActive;
+    @Column(columnDefinition = "boolean default true")
+    private boolean isActive = true;
 
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 }
