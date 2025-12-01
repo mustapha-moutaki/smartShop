@@ -39,22 +39,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDtoResponse createOrder(OrderDtoRequest orderDtoRequest) {
 
-        // 1️⃣ Fetch client from DB
+        // Fetch client from DB
         Client client = clientRepository.findById(orderDtoRequest.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + orderDtoRequest.getClientId()));
 
-        // 2️⃣ Convert DTO to Order entity
+        // Convert DTO to Order entity
         Order order = orderMapper.toEntity(orderDtoRequest);
         order.setClient(client); // link client to the order
 
-        // 3️⃣ Fetch promo code if exists
+        // Fetch promo code if exists
         if (orderDtoRequest.getPromoCodeId() != null && orderDtoRequest.getPromoCodeId() != null) {
             PromoCode promoCode = promoCodeRepository.findById(orderDtoRequest.getPromoCodeId())
                     .orElseThrow(() -> new ResourceNotFoundException("Promo code not found with id: " + orderDtoRequest.getPromoCodeId()));
             order.setPromoCode(promoCode);
         }
 
-        // 4️⃣ Map OrderItem DTOs to OrderItem entities
+        // Map OrderItem DTOs to OrderItem entities
         order.setItems(orderDtoRequest.getItems().stream()
                 .map(itemDto -> {
                     Product product = productRepository.findById(itemDto.getProductId())
@@ -69,35 +69,35 @@ public class OrderServiceImpl implements OrderService {
                 }).collect(Collectors.toList())
         );
 
-        // 5️⃣ Calculate Subtotal
+        //  Calculate Subtotal
         double subTotal = order.getItems().stream()
                 .mapToDouble(item -> item.getUnitPrice() * item.getQuantity())
                 .sum();
         order.setSubTotal(subTotal);
 
-        // 6️⃣ Calculate discount (loyalty + promo)
+        // Calculate discount (loyalty + promo)
         double discountAmount = getDiscountAmount(order, subTotal);
         order.setDiscount(discountAmount);
 
-        // 7️⃣ Price after discount
+        // Price after discount
         double priceAfterDiscount = subTotal - discountAmount;
 
-        // 8️⃣ Calculate VAT
+        // Calculate VAT
         double tvaAmount = priceAfterDiscount * AppConstants.TVA;
         order.setVat(tvaAmount);
 
-        // 9️⃣ Calculate total and remaining amount
+        // Calculate total and remaining amount
         double totalPrice = priceAfterDiscount + tvaAmount;
         order.setTotal(totalPrice);
         order.setRemainingAmount(totalPrice);
 
-        // 🔟 Set initial order status
+        // Set initial order status
         order.setStatus(OrderStatus.PENDING);
 
-        // 1️⃣1️⃣ Save order to DB
+        // Save order to DB
         orderRepository.save(order);
 
-        // 1️⃣2️⃣ Convert entity to DTO for response
+        // Convert entity to DTO for response
         return orderMapper.toDto(order);
     }
 
