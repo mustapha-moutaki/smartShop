@@ -2,6 +2,7 @@ package org.mustapha.smartShop.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.mustapha.smartShop.util.PasswordUtil;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.HttpSession;
 import org.mustapha.smartShop.dto.request.LoginDtoRequest;
@@ -34,7 +35,9 @@ public class AuthController {
         Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if (request.getPassword().equals(user.getPassword())) {
+//            if (request.getPassword().equals(user.getPassword())) {
+            // Use PasswordUtil to verify hashed password
+            if (PasswordUtil.verify(request.getPassword(), user.getPassword())) {
                 session.setAttribute("userId", user.getId());
                 session.setAttribute("role", user.getRole().name());
                 return ResponseEntity.ok(user.getRole() + " logged in");
