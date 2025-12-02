@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mustapha.smartShop.config.AppConstants;
 import org.mustapha.smartShop.dto.request.OrderDtoRequest;
+import org.mustapha.smartShop.dto.response.ClientOrderDtoResponse;
 import org.mustapha.smartShop.dto.response.OrderDtoResponse;
 import org.mustapha.smartShop.enums.LoyaltyLevel;
 import org.mustapha.smartShop.enums.OrderStatus;
@@ -241,7 +242,10 @@ public class OrderServiceImpl implements OrderService {
         clientRepository.save(client);
     }
 
-
+    @Override
+    public List<Order> findOrdersByClientId(Long id) {
+        return orderRepository.findByClient_Id(id);
+    }
 }
 
 

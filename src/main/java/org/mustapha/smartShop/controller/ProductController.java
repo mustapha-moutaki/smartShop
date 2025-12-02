@@ -1,65 +1,65 @@
 package org.mustapha.smartShop.controller;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.mustapha.smartShop.dto.request.ProductDtoRequest;
 import org.mustapha.smartShop.dto.response.ProductDtoResponse;
-import org.mustapha.smartShop.model.Product;
 import org.mustapha.smartShop.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/products")
-public class ProductController{
+@Tag(name = "Products", description = "Product management endpoints")
+public class ProductController {
 
     private final ProductService productService;
 
     // create product
     @PostMapping
-    public ResponseEntity<ProductDtoResponse>createProduct(@Valid @RequestBody ProductDtoRequest productDtoRequest){
-        // 1- save the product
+    @Operation(summary = "Create product", description = "Create a new product")
+    public ResponseEntity<ProductDtoResponse> createProduct(@Valid @RequestBody ProductDtoRequest productDtoRequest) {
         ProductDtoResponse createdProduct = productService.createProduct(productDtoRequest);
-        // 2- retunr the response
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     // update product
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDtoResponse>updateProduct(@PathVariable Long id,@Valid  @RequestBody ProductDtoRequest productDtoRequest){
-        // update product
+    @Operation(summary = "Update product", description = "Update an existing product by ID")
+    public ResponseEntity<ProductDtoResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDtoRequest productDtoRequest) {
         ProductDtoResponse productUpdated = productService.updateProduct(id, productDtoRequest);
-        // retunr the response
         return ResponseEntity.ok(productUpdated);
     }
 
     // get by id
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDtoResponse>getById(@PathVariable Long id){
+    @Operation(summary = "Get product by ID", description = "Retrieve a product using its ID")
+    public ResponseEntity<ProductDtoResponse> getById(@PathVariable Long id) {
         ProductDtoResponse product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
 
     // get all products
     @GetMapping
-    public ResponseEntity<Page<ProductDtoResponse>>getAll(
+    @Operation(summary = "Get all products", description = "Retrieve paginated list of all products")
+    public ResponseEntity<Page<ProductDtoResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        Page<ProductDtoResponse>productList = productService.getAllProducts(page, size);
+    ) {
+        Page<ProductDtoResponse> productList = productService.getAllProducts(page, size);
         return ResponseEntity.ok(productList);
     }
 
     // delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>delete(@PathVariable Long id){
+    @Operation(summary = "Delete product", description = "Soft delete a product by its ID")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.softDelete(id);
         return ResponseEntity.noContent().build();
     }

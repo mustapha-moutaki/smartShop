@@ -1,5 +1,7 @@
 package org.mustapha.smartShop.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mustapha.smartShop.dto.request.UserDtoRequest;
@@ -15,18 +17,20 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/users")
-
 // add pagiantaion
+@Tag(name = "Users", description = "User management endpoints")
 public class UserController {
     private final UserService userService;
 
     @PostMapping
+    @Operation(summary = "Create new user", description = "Admin can create new users")
     public ResponseEntity<UserDtoResponse>createUser(@Valid @RequestBody UserDtoRequest userDtoRequest){
         UserDtoResponse createdUser =  userService.createUser(userDtoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update user", description = "Admin updates an existing user")
     public ResponseEntity<UserDtoResponse>updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserDtoRequest userDtoRequest
@@ -38,12 +42,14 @@ public class UserController {
 
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get user by ID", description = "Retrieve a user by ID")
     public ResponseEntity<UserDtoResponse>getById( @PathVariable Long id){
         UserDtoResponse userFind = userService.getUerById(id);
         return ResponseEntity.ok(userFind);
     }
 
     @GetMapping
+    @Operation(summary = "Delete user", description = "Admin deletes user by ID")
     public ResponseEntity<Page<UserDtoResponse>>getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -53,6 +59,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete user", description = "Admin deletes user by ID")
     public ResponseEntity<UserDtoResponse>deleteUser(@PathVariable Long id){
 
         userService.deleteUser(id);

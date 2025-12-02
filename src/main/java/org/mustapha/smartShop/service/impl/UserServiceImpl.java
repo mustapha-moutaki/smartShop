@@ -13,6 +13,7 @@ import org.mustapha.smartShop.model.User;
 import org.mustapha.smartShop.repository.ClientRepository;
 import org.mustapha.smartShop.repository.UserRepository;
 import org.mustapha.smartShop.service.UserService;
+import org.mustapha.smartShop.util.PasswordUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,29 +35,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDtoResponse createUser(UserDtoRequest dto) {
-        // Check if username already exists
+
+        // 1 - Check if username already exists
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new ValidationException("Username already exists: " + dto.getUsername());
         }
-        if (dto.getClient() != null && clientRepository.findByEmail(dto.getClient().getEmail()).isPresent()) {
-            throw new ValidationException("Email already exist");
+
+        // 2 - Check if client email already exists (only for client accounts)
+        if (dto.getClient() != null &&
+                clientRepository.findByEmail(dto.getClient().getEmail()).isPresent()) {
+            throw new ValidationException("Email already exists");
         }
-        // Convert DTO to Entity
+
+        // 3 - Convert DTO to Entity
         User user = userMapper.toEntity(dto);
 
-        // Handle client if exists in DTO
+        // 4 - Hash the password before saving
+        user.setPassword(PasswordUtil.hash(dto.getPassword()));
+
+        // 5 - Handle client entity if provided
         if (dto.getClient() != null) {
             Client client = clientMapper.toEntity(dto.getClient());
             client.setUser(user);
             user.setClient(client);
         }
 
-        // Save user to database
+        // 6 - Save user (and client if exists)
         User savedUser = userRepository.save(user);
 
-        // Convert Entity to Response DTO
+        // 7 - Convert saved entity to response DTO
         return userMapper.toDto(savedUser);
     }
+
 
     @Override
     public UserDtoResponse updateUser(Long id, UserDtoRequest userDtoRequest) {

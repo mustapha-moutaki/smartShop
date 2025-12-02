@@ -3,7 +3,9 @@ package org.mustapha.smartShop.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mustapha.smartShop.dto.request.OrderDtoRequest;
+import org.mustapha.smartShop.dto.response.ClientOrderDtoResponse;
 import org.mustapha.smartShop.dto.response.OrderDtoResponse;
+import org.mustapha.smartShop.model.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,4 +30,6 @@ public interface OrderService {
 
 
     OrderDtoResponse confirmOrder(Long id);
+
+    List<Order> findOrdersByClientId(Long id);
 }
