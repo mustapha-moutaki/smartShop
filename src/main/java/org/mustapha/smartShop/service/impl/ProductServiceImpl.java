@@ -10,6 +10,7 @@ import org.mustapha.smartShop.mapper.ProductMapper;
 import org.mustapha.smartShop.model.Product;
 import org.mustapha.smartShop.repository.ProductRepository;
 import org.mustapha.smartShop.service.ProductService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
@@ -74,12 +75,29 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toDto(product);
     }
 
-    @Override
-    public Page<ProductDtoResponse> getAllProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productsList = productRepository.findByDeletedFalse(pageable);
-        return productsList.map(productMapper::toDto);
+//    @Override
+//    public Page<ProductDtoResponse> getAllProducts(int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Product> productsList = productRepository.findByDeletedFalse(pageable);
+//        return productsList.map(productMapper::toDto);
+//    }
+@Override
+public Page<ProductDtoResponse> getAllProducts(int page, int size, String name, String sortBy, String sortDir) {
+    Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<Product> productsList;
+
+    if (name != null && !name.isEmpty()) {
+        // filter by name directly in db
+        productsList = productRepository.findByDeletedFalseAndNameContainingIgnoreCase(name, pageable);
+    } else {
+        productsList = productRepository.findByDeletedFalse(pageable);
     }
+
+    return productsList.map(productMapper::toDto);
+}
+
 
     @Override
     public void softDelete(Long id) {

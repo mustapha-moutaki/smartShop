@@ -75,36 +75,55 @@ public class OrderController {
     }
 
 
-    @GetMapping("/my-history")
-    public ResponseEntity<List<ClientOrderDtoResponse>> getMyHistory(HttpSession session) {
+//    @GetMapping("/my-history")
+//    public ResponseEntity<List<ClientOrderDtoResponse>> getMyHistory(HttpSession session) {
+//
+//        Long userId = (Long) session.getAttribute("userId");
+//        if (userId == null) {
+//            return ResponseEntity.status(401).body(null);
+//        }
+//
+//        List<Order> orders = orderService.findOrdersByClientId(userId);
+//
+//        List<ClientOrderDtoResponse> responseList = orders.stream().map(order -> {
+//            ClientOrderDtoResponse dto = new ClientOrderDtoResponse();
+//            dto.setDate(order.getDate());
+//            dto.setSubTotal(order.getSubTotal());
+//            dto.setDiscount(order.getDiscount());
+//            dto.setVat(order.getVat());
+//            dto.setTotal(order.getTotal());
+//            dto.setItems(mapItems(order.getItems()));
+//            return dto;
+//        }).toList();
+//
+//        return ResponseEntity.ok(responseList);
+//    }
+//    private List<OrderItemDtoResponse> mapItems(List<OrderItem> items) {
+//        if (items == null) return new ArrayList<>();
+//
+//        return items.stream().map(item -> {
+//            OrderItemDtoResponse dto = new OrderItemDtoResponse();
+//            BeanUtils.copyProperties(item, dto);
+//            return dto;
+//        }).toList();
+//    }
+@GetMapping("/my-history/{clientId}")
+public ResponseEntity<List<ClientOrderDtoResponse>> getMyHistory(@PathVariable Long clientId) {
+    List<Order> orders = orderService.findOrdersByClientId(clientId);
 
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return ResponseEntity.status(401).body(null);
-        }
+    List<ClientOrderDtoResponse> responseList = orders.stream().map(order -> {
+        ClientOrderDtoResponse dto = new ClientOrderDtoResponse();
+        dto.setId(order.getId());
+        dto.setDate(order.getDate());
+        dto.setSubTotal(order.getSubTotal());
+        dto.setDiscount(order.getDiscount());
+        dto.setVat(order.getVat());
+        dto.setTotal(order.getTotal());
+        dto.setItemIds(order.getItems().stream().map(OrderItem::getId).toList());
+        return dto;
+    }).toList();
 
-        List<Order> orders = orderService.findOrdersByClientId(userId);
+    return ResponseEntity.ok(responseList);
+}
 
-        List<ClientOrderDtoResponse> responseList = orders.stream().map(order -> {
-            ClientOrderDtoResponse dto = new ClientOrderDtoResponse();
-            dto.setDate(order.getDate());
-            dto.setSubTotal(order.getSubTotal());
-            dto.setDiscount(order.getDiscount());
-            dto.setVat(order.getVat());
-            dto.setTotal(order.getTotal());
-            dto.setItems(mapItems(order.getItems()));
-            return dto;
-        }).toList();
-
-        return ResponseEntity.ok(responseList);
-    }
-    private List<OrderItemDtoResponse> mapItems(List<OrderItem> items) {
-        if (items == null) return new ArrayList<>();
-
-        return items.stream().map(item -> {
-            OrderItemDtoResponse dto = new OrderItemDtoResponse();
-            BeanUtils.copyProperties(item, dto);
-            return dto;
-        }).toList();
-    }
 }

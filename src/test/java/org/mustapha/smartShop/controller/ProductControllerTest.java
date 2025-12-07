@@ -86,14 +86,18 @@ class ProductControllerTest {
         productList.add(productDtoResponse);
         Page<ProductDtoResponse> productPage = new PageImpl<>(productList);
 
-        when(productService.getAllProducts(0, 10)).thenReturn(productPage);
 
-        ResponseEntity<Page<ProductDtoResponse>> response = productController.getAll(0, 10);
+        when(productService.getAllProducts(0, 10, null, null, null)).thenReturn(productPage);
+
+        ResponseEntity<Page<ProductDtoResponse>> response = productController.getAll(0, 10, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().getTotalElements());
-        verify(productService, times(1)).getAllProducts(0, 10);
+
+
+        verify(productService, times(1)).getAllProducts(0, 10, null, null, null);
     }
+
 
     @Test
     void testDeleteProduct() {

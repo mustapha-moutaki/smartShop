@@ -44,6 +44,8 @@ public class OrderServiceImpl implements OrderService {
         Client client = clientRepository.findById(orderDtoRequest.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + orderDtoRequest.getClientId()));
 
+
+
         // Convert DTO to Order entity
         Order order = orderMapper.toEntity(orderDtoRequest);
         order.setClient(client); // link client to the order
@@ -61,10 +63,21 @@ public class OrderServiceImpl implements OrderService {
                     Product product = productRepository.findById(itemDto.getProductId())
                             .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + itemDto.getProductId()));
 
+
+                    //check the stock befre create order
+                    if (product.getStock() < itemDto.getQuantity()) {
+                        throw new BusinessRuleException(
+                                "this product " + product.getName() +
+                                        " this quntity is not available in our stock - available:  " + product.getStock()
+                        );
+                    }
+
+
                     OrderItem item = new OrderItem();
                     item.setProduct(product);
                     item.setQuantity(itemDto.getQuantity());
                     item.setUnitPrice(product.getUnitPrice());
+                    item.setTotalLine(itemDto.getQuantity() * item.getUnitPrice());
                     item.setOrder(order);
                     return item;
                 }).collect(Collectors.toList())

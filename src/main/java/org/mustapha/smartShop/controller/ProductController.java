@@ -47,12 +47,15 @@ public class ProductController {
 
     // get all products
     @GetMapping
-    @Operation(summary = "Get all products", description = "Retrieve paginated list of all products")
+    @Operation(summary = "Get all products", description = "Retrieve paginated list of all products with optional filter and sorting")
     public ResponseEntity<Page<ProductDtoResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,        // fitler by name
+            @RequestParam(defaultValue = "id") String sortBy,   // sort by any filed
+            @RequestParam(defaultValue = "asc") String sortDir  // sort direct asc desc
     ) {
-        Page<ProductDtoResponse> productList = productService.getAllProducts(page, size);
+        Page<ProductDtoResponse> productList = productService.getAllProducts(page, size, name, sortBy, sortDir);
         return ResponseEntity.ok(productList);
     }
 
