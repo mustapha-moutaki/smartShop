@@ -14,6 +14,15 @@ L'application permet de gérer un portefeuille de **650 clients actifs** avec :
 
 ---
 
+# UML
+
+## use case diagram
+<img width="8456" height="10306" alt="UMLusecase-smartSho" src="https://github.com/user-attachments/assets/6cd43c8d-a2ae-484c-a933-9ce75d8303df" />
+
+## class diagram
+
+<img width="4298" height="2974" alt="UML class-smartshop" src="https://github.com/user-attachments/assets/758900c2-0834-4e7e-9672-033de18172c1" />
+
 ## 🚀 Technologies Utilisées
 
 ### Backend
