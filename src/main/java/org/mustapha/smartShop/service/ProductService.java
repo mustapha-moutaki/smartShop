@@ -12,7 +12,8 @@ public interface ProductService {
 
     ProductDtoResponse getProductById(Long id);
 
-    Page<ProductDtoResponse> getAllProducts(int page, int size);
+//    Page<ProductDtoResponse> getAllProducts(int page, int size);
+Page<ProductDtoResponse> getAllProducts(int page, int size, String name, String sortBy, String sortDir);
 
     void softDelete(Long id);
 

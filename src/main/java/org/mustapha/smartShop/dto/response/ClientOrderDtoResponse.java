@@ -8,7 +8,9 @@ import java.util.List;
 @Data
 public class ClientOrderDtoResponse {
 
-    private List<OrderItemDtoResponse> items;
+    private Long id;
+
+    private List<Long> itemIds;
 
     private LocalDateTime date;
 

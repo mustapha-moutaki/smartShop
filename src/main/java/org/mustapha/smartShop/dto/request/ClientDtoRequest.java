@@ -23,8 +23,7 @@ public class ClientDtoRequest {
     @Email
     private String email;
 
-    @NotNull(message = "loyalty level is required")
-    private LoyaltyLevel loyaltyLevel;
+    private LoyaltyLevel loyaltyLevel = LoyaltyLevel.BRONZE;// default
 
 
     private List<Long> orderIds;
