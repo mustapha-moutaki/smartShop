@@ -70,6 +70,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDtoResponse updateUser(Long id, UserDtoRequest userDtoRequest) {
+
+        if(id == 1){
+            throw new ValidationException("you cannot update the main admin");
+        }
         // Find existing user by id
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -119,6 +123,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        if(id ==1){
+            throw new ValidationException("you cannot remove the main admin");
+        }
       // find user in db
         User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("user not found with id: "+id));
         userRepository.delete(user);
