@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         // Update basic user data
         user.setUsername(userDtoRequest.getUsername());
-        user.setPassword(userDtoRequest.getPassword());
+        user.setPassword(PasswordUtil.hash(userDtoRequest.getPassword()));
         user.setRole(userDtoRequest.getRole());
 
         // Update client data if exists in DTO
