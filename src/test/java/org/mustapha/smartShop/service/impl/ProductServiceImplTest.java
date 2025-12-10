@@ -129,18 +129,12 @@ class ProductServiceImplTest {
         when(productRepository.findByDeletedFalse(any(Pageable.class))).thenReturn(page);
         when(productMapper.toDto(product)).thenReturn(productDtoResponse);
 
-
-        String name = null;
-        String sortBy = "id";
-        String sortDir = "asc";
-
-        Page<ProductDtoResponse> response = productService.getAllProducts(0, 10, name, sortBy, sortDir);
+        Page<ProductDtoResponse> response = productService.getAllProducts(0, 10,"", "asc","1");
 
         assertNotNull(response);
         assertEquals(1, response.getTotalElements());
         assertEquals("Laptop", response.getContent().get(0).getName());
     }
-
 
     @Test
     void testSoftDeleteProductSuccess() {
