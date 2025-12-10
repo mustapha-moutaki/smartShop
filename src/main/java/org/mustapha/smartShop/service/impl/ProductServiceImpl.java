@@ -8,6 +8,7 @@ import org.mustapha.smartShop.exception.BusinessRuleException;
 import org.mustapha.smartShop.exception.ResourceNotFoundException;
 import org.mustapha.smartShop.mapper.ProductMapper;
 import org.mustapha.smartShop.model.Product;
+import org.mustapha.smartShop.repository.OrderRepository;
 import org.mustapha.smartShop.repository.ProductRepository;
 import org.mustapha.smartShop.service.ProductService;
 import org.springframework.data.domain.Sort;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 
 
 @Service
@@ -26,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public ProductDtoResponse createProduct(ProductDtoRequest productDtoRequest) {
@@ -112,5 +116,26 @@ public Page<ProductDtoResponse> getAllProducts(int page, int size, String name, 
         // 3- update it but we use transactional so it's update automaticaally
 //        productRepository.save(product);
 
+    }
+
+
+
+
+    public List<ProductDtoResponse> getAllProductPayedAndExpensive(){
+
+        List<ProductDtoResponse>product =  orderRepository.findAll().stream()
+                .flatMap(o -> o.getItems().stream())
+                .filter(p-> p.getUnitPrice() > 1000)
+                .map(i->i.getProduct())
+                .map(productMapper::toDto)
+                .toList();
+                return product;
+
+//                        .flatMap(order -> order.getItems().stream()
+//                                .filter(item -> item.getUnitPrice() > 1000)
+//                                .map(item -> item.getProduct())
+//                        )
+//                        .map(ProductMapper::toDto)
+//                        .toList;
     }
 }

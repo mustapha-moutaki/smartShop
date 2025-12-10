@@ -9,6 +9,6 @@ import org.mustapha.smartShop.model.Product;
 public interface ProductMapper {
 
     Product toEntity(ProductDtoRequest productDtoRequest);
-    ProductDtoResponse toDto(Product product);
+     ProductDtoResponse toDto(Product product);
 
 }
