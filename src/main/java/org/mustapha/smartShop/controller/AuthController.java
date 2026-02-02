@@ -2,6 +2,7 @@ package org.mustapha.smartShop.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.mustapha.smartShop.dto.response.LoginDtoResponse;
 import org.mustapha.smartShop.util.PasswordUtil;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.HttpSession;
@@ -33,14 +34,26 @@ public class AuthController {
     )
     public ResponseEntity<?> login(@RequestBody LoginDtoRequest request, HttpSession session) {
         Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
+
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-//            if (request.getPassword().equals(user.getPassword())) {
+
             // Use PasswordUtil to verify hashed password
             if (PasswordUtil.verify(request.getPassword(), user.getPassword())) {
+
+                // 1. Set Session Attributes (for the Interceptor)
                 session.setAttribute("userId", user.getId());
                 session.setAttribute("role", user.getRole().name());
-                return ResponseEntity.ok(user.getRole() + " logged in");
+
+                // 2. Prepare the response for the Frontend
+                LoginDtoResponse response = new LoginDtoResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getRole().name(),
+                        "Login successful"
+                );
+
+                return ResponseEntity.ok(response);
             }
         }
         return ResponseEntity.status(401).body("Invalid credentials");
